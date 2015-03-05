@@ -48,6 +48,7 @@ BasicGame.Game.prototype = {
     this.ball.body.maxVelocity.setTo(this.ballSpeed, this.ballSpeed);
 
     this.hitSound = this.add.audio('hit');
+    this.engineSound = this.add.audio('engine');
     this.cursors = this.input.keyboard.createCursorKeys();
   },
 
@@ -57,6 +58,7 @@ BasicGame.Game.prototype = {
 
     if (this.cursors.up.isDown) {
       this.car.body.acceleration.y = -this.ACCELERATION;
+      this.engineSound.play();
     } else if (this.cursors.down.isDown) {
       this.car.body.acceleration.y = this.ACCELERATION;
     } else {
@@ -90,6 +92,7 @@ BasicGame.Game.prototype = {
 
   carHitBall: function() {
     this.ballSpeed += this.ballSpeed <= 500 ? 10 : 0;
+    this.ball.body.velocity.x = this.rnd.pick([-300, -200, -100, 100, 200, 300]);
     this.ball.body.maxVelocity.setTo(this.ballSpeed, this.ballSpeed);
     if (this.ball.body.velocity.y >= 0) {
       this.ball.body.velocity.y = -this.ballSpeed;
