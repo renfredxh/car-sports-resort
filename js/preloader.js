@@ -19,6 +19,7 @@ BasicGame.Preloader.prototype = {
     this.load.image('court', 'assets/tennis.jpg');
     this.load.image('car', 'assets/car.png');
     this.load.image('ball', 'assets/ball.png');
+    this.load.audio('hit', ['assets/hit.ogg', 'assets/hit.mp3']);
   },
 
   create: function () {

@@ -47,12 +47,12 @@ BasicGame.Game.prototype = {
     this.ball.body.bounce.set(1);
     this.ball.body.maxVelocity.setTo(this.ballSpeed, this.ballSpeed);
 
+    this.hitSound = this.add.audio('hit');
     this.cursors = this.input.keyboard.createCursorKeys();
   },
 
   update: function () {
 
-      //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
     this.physics.arcade.collide(this.car, this.ball, this.carHitBall, null, this);
 
     if (this.cursors.up.isDown) {
@@ -68,6 +68,10 @@ BasicGame.Game.prototype = {
       this.car.body.acceleration.x = this.ACCELERATION;
     } else {
       this.car.body.acceleration.x = 0;
+    }
+    if (this.car.body.y < 100) {
+      this.car.body.velocity.y = 50;
+      this.car.body.y = 105;
     }
 
     this.updateBall()
@@ -92,16 +96,11 @@ BasicGame.Game.prototype = {
     } else {
       this.ball.body.velocity.y = this.ballSpeed;
     }
+    this.hitSound.play();
   },
 
   resetGame: function () {
-
-      //  Here you should destroy anything you no longer need.
-      //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
-
-      //  Then let's go back to the main menu.
       this.state.restart();
-
   }
 
 };
