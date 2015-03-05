@@ -20,33 +20,88 @@ BasicGame.Game = function (game) {
     this.physics;   //  the physics manager (Phaser.Physics)
     this.rnd;       //  the repeatable random number generator (Phaser.RandomDataGenerator)
 
-    //  You can use any of these from any function within this State.
-    //  But do consider them as being 'reserved words', i.e. don't create a property for your own game called "world" or you'll over-write the world reference.
-
+    this.car;
+    this.cursors;
+    this.ballSpeed;
+    this.MAX_SPEED = 800;
+    this.DRAG = 800;
+    this.ACCELERATION = 1900;
 };
 
 BasicGame.Game.prototype = {
 
-    create: function () {
+  create: function () {
 
-        //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
+    this.background = this.add.sprite(0, 0, 'court');
+    this.car = this.game.add.sprite(this.game.width/2 - 32, this.game.height - 200, 'car');
 
-    },
+    this.game.physics.enable(this.car, Phaser.Physics.ARCADE);
+    this.car.body.collideWorldBounds = true;
+    this.car.body.maxVelocity.setTo(this.MAX_SPEED, this.MAX_SPEED);
+    this.car.body.drag.setTo(this.DRAG, this.DRAG);
 
-    update: function () {
+    this.ballSpeed = 175;
+    this.ball = this.game.add.sprite(this.game.width/2 - 11, 10, 'ball');
+    this.game.physics.enable(this.ball, Phaser.Physics.ARCADE);
+    this.ball.body.collideWorldBounds = true;
+    this.ball.body.bounce.set(1);
+    this.ball.body.maxVelocity.setTo(this.ballSpeed, this.ballSpeed);
 
-        //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
+    this.cursors = this.input.keyboard.createCursorKeys();
+  },
 
-    },
+  update: function () {
 
-    quitGame: function (pointer) {
+      //  Honestly, just about anything could go here. It's YOUR game after all. Eat your heart out!
+    this.physics.arcade.collide(this.car, this.ball, this.carHitBall, null, this);
 
-        //  Here you should destroy anything you no longer need.
-        //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
-
-        //  Then let's go back to the main menu.
-        this.state.start('MainMenu');
-
+    if (this.cursors.up.isDown) {
+      this.car.body.acceleration.y = -this.ACCELERATION;
+    } else if (this.cursors.down.isDown) {
+      this.car.body.acceleration.y = this.ACCELERATION;
+    } else {
+      this.car.body.acceleration.y = 0;
     }
+    if (this.cursors.left.isDown) {
+      this.car.body.acceleration.x = -this.ACCELERATION;
+    } else if (this.cursors.right.isDown) {
+      this.car.body.acceleration.x = this.ACCELERATION;
+    } else {
+      this.car.body.acceleration.x = 0;
+    }
+
+    this.updateBall()
+
+  },
+
+  updateBall: function() {
+    if (this.ball.body.y > this.game.height - 24) {
+      this.resetGame();
+    }
+    if (this.ball.body.velocity.y === 0) {
+      this.ball.body.velocity.y = -this.ballSpeed;
+      this.ball.body.velocity.x = this.rnd.pick([-100, -50, 50, 100]);
+    }
+  },
+
+  carHitBall: function() {
+    this.ballSpeed += this.ballSpeed <= 500 ? 10 : 0;
+    this.ball.body.maxVelocity.setTo(this.ballSpeed, this.ballSpeed);
+    if (this.ball.body.velocity.y >= 0) {
+      this.ball.body.velocity.y = -this.ballSpeed;
+    } else {
+      this.ball.body.velocity.y = this.ballSpeed;
+    }
+  },
+
+  resetGame: function () {
+
+      //  Here you should destroy anything you no longer need.
+      //  Stop music, delete sprites, purge caches, free resources, all that good stuff.
+
+      //  Then let's go back to the main menu.
+      this.state.restart();
+
+  }
 
 };
